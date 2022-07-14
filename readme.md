@@ -33,6 +33,15 @@ list all containers: docker container ls
 stop container: docker stop id
 step into container: docker exec -it <container_id> /bin/bash
 
+## commands
+### start app locally for development
+`cd Documents/terry/projects/deploy-django-with-docker-compose`
+`docker-compose build`
+`docker-compose up`
+`docker-compose run --rm app sh -c "python manage.py createsuperuser"`
+go to `http://127.0.0.1:8000/admin/`
+stop continer `ctrl + c`
+
 
 ## move docker files to root
 move Docker + .dockerignore + requirements.txt files to the root
@@ -49,5 +58,9 @@ In the Dockerfile:
 - COPY ./scripts /scripts (not sure this is required)
 - CMD ["run.sh"] (remove the old CMD command)
 
+
+## add docker-compose file and set database to postgres
+- base settings: app/app/settings/base.py
+- add wait_for_db command to app doesn't start until database is running
 
 

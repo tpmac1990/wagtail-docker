@@ -2,7 +2,7 @@
 
 # exit on error and print trace
 # set -xe
-set -e
+set -xe
 
 # following:
 #   1. Migrate the database.
@@ -13,6 +13,7 @@ set -e
 #   phase facilities of your hosting platform. This is used only so the
 #   Wagtail instance can be started with a simple "docker run" command.
 # CMD cd app; set -xe; python manage.py migrate --noinput; gunicorn app.wsgi:application
+python manage.py wait_for_db
 python manage.py collectstatic --noinput --clear
 python manage.py migrate --noinput
 
