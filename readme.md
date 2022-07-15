@@ -39,6 +39,9 @@ step into container: docker exec -it <container_id> /bin/bash
 or 
 `docker-compose run app python manage.py _________`
 
+`docker-compose run --rm app sh -c "python manage.py shell" `
+
+
 ### start app locally for development
 `cd Documents/terry/projects/deploy-django-with-docker-compose`
 `docker-compose build`
@@ -76,9 +79,7 @@ In the Dockerfile:
 - add document module to map above models to elasticsearch
 - add load_posts command to add dummy data to test elastic search with
 - load posts with: `docker-compose run web python manage.py load_posts 20`
+- test elasticsearch is working: `curl -X GET localhost:9200/_cluster/health`
 - https://www.obytes.com/blog/building-a-full-text-search-app-using-django-docker-and-elasticsearch
 - https://github.com/obytes/django-elasticsearch-example
-
-
-
 

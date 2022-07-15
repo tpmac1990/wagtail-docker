@@ -42,16 +42,19 @@ RUN /py/bin/pip install -r /requirements.txt
 # Add user that will be used in the container.
 RUN adduser --disabled-password --no-create-home wagtail
 
+RUN mkdir -p /vol/web/static && \
+    mkdir -p /vol/web/media
+
 # # create /vol directory
 # RUN mkdir -p /vol
 
 # Set this directory to be owned by the "wagtail" user. This Wagtail project
 # uses SQLite, the folder needs to be owned by the user that
 # will be writing to the database file.
-RUN chown -R wagtail:wagtail /app
+RUN chown -R wagtail:wagtail /vol
 
-# # provide read & write permissions
-# RUN chmod -R 755 /vol
+# provide read & write permissions
+RUN chmod -R 755 /vol
 
 # makes all scripts in scripts directory executable.
 RUN chmod -R +x /scripts

@@ -4,6 +4,11 @@
 # set -xe
 set -xe
 
+ls -la /vol/
+ls -la /vol/web
+
+whoami
+
 # following:
 #   1. Migrate the database.
 #   2. Start the application server.
@@ -17,17 +22,6 @@ python manage.py wait_for_db
 python manage.py collectstatic --noinput --clear
 python manage.py migrate --noinput
 
-gunicorn app.wsgi:application
+# gunicorn app.wsgi:application
+uwsgi --socket :9000 --workers 4 --master --enable-threads --module app.wsgi
 
-
-
-# ls -la /vol/
-# ls -la /vol/web
-
-# whoami
-
-# python manage.py wait_for_db
-# python manage.py collectstatic --noinput
-# python manage.py migrate
-
-# uwsgi --socket :9000 --workers 4 --master --enable-threads --module app.wsgi

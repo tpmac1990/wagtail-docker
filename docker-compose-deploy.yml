@@ -1,0 +1,93 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+    # application will automatically restart if it crashes
+    restart: always
+    volumes:
+      # use a named volume for the static files so instead of mapping to a specific file for you it will handle the mapping of that file
+      # behind the scenes and store it somewhere in the system in an efficient way.
+      - static-data:/vol/web
+    environment:
+      - DEBUG=0
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - ELASTICSEARCH_DSL_HOSTS=es:9200
+    depends_on:
+      - db
+      - es
+
+  db:
+    image: postgres:13-alpine
+    restart: always
+    volumes:
+      # named volumne. We do this so in production if we close down a container then we won't lose the data from the database. It will
+      #   be persisted in a volume
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+
+  proxy:
+    build:
+      # set the context to the proxy directory
+      context: ./proxy
+    restart: always
+    ports:
+      # 80 is the default http port. Accept on 80 in the proxy and forward to 8000 in the container
+      - 80:8000
+    volumes:
+      # static-data should match the named volume in app volumes. So we have a shared volume that both the app and the proxy can access.
+      #   this is how the proxy is abe to serve the staticfiles without bothering the applications python code.
+      - static-data:/vol/static
+    depends_on:
+      - app
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis_data:/app
+
+  celery:
+    restart: always
+    build:
+      context: .
+    command: celery -A app worker -l info
+    volumes:
+      - celery_data:/app
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=0
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+    depends_on:
+      - db
+      - redis
+      - app
+
+  es:
+    image: elasticsearch:7.8.1
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+
+
+# define the named volumes
+volumes:
+  postgres-data:
+  static-data:
+  redis_data:
+  celery_data:
+  es_data:

@@ -17,6 +17,21 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 
+DEBUG = bool(int(os.environ.get('DEBUG', 0)))
+
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+ALLOWED_HOSTS = []
+# filter out all 'None' values
+# default to '' so we don't have to provide ALLOWED_HOSTS in the docker-compose file for development
+ALLOWED_HOSTS.extend(
+    filter(
+        None,
+        os.environ.get('ALLOWED_HOSTS', '').split(','),
+    )
+)
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -152,16 +167,35 @@ STATICFILES_DIRS = [
     os.path.join(PROJECT_DIR, "static"),
 ]
 
-# ManifestStaticFilesStorage is recommended in production, to prevent outdated
-# JavaScript / CSS assets being served from cache (e.g. after a Wagtail upgrade).
-# See https://docs.djangoproject.com/en/4.0/ref/contrib/staticfiles/#manifeststaticfilesstorage
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+# # ManifestStaticFilesStorage is recommended in production, to prevent outdated
+# # JavaScript / CSS assets being served from cache (e.g. after a Wagtail upgrade).
+# # See https://docs.djangoproject.com/en/4.0/ref/contrib/staticfiles/#manifeststaticfilesstorage
+# STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATIC_URL = "/static/"
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+# STATIC_URL = "/static/static/"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# MEDIA_URL = "/media/"
+
+
+# url prefixes that are going to be used when the django app generates urls for the static and media files.
+# this sets up a url structure that we can then use to configure our proxy to catch all of these different urls.
+# that will allow use to capture those urls and forward them to the location where those files are and send the rest
+# of the requests to the django application. 
+STATIC_URL = '/static/static/' # anything used in templates
+MEDIA_URL = '/static/media/' # media files uploaded by the user
+
+# set the root directories in the django app that we want to store these files. This is where these files are going to 
+# be stored on the file system. It has nothing to do with the urls that get served. Media root says if we upload any 
+# media files to the django application, store them in /vol/web/media. 
+# when we run the 'collectstatic' command, it's going to place them in /vol/web/static.
+# So, we can take this location and map it to the proxy image which can then access the files and then serve them directly
+# from the proxy without sending them to the app. The catch is that django doesn't serve the media files by default in the 
+# development server. So there is a small change we need to make to the application so that it serves the media files when 
+# we're doing the django development server for development services.
+MEDIA_ROOT = '/vol/web/media'
+STATIC_ROOT = '/vol/web/static'
 
 
 # Wagtail settings
