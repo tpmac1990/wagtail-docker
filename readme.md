@@ -34,6 +34,11 @@ stop container: docker stop id
 step into container: docker exec -it <container_id> /bin/bash
 
 ## commands
+### running django commands
+`docker-compose run --rm app sh -c "python manage.py _________"`
+or 
+`docker-compose run app python manage.py _________`
+
 ### start app locally for development
 `cd Documents/terry/projects/deploy-django-with-docker-compose`
 `docker-compose build`
@@ -58,7 +63,6 @@ In the Dockerfile:
 - COPY ./scripts /scripts (not sure this is required)
 - CMD ["run.sh"] (remove the old CMD command)
 
-
 ## add docker-compose file and set database to postgres
 - base settings: app/app/settings/base.py
 - add wait_for_db command to app doesn't start until database is running
@@ -66,4 +70,15 @@ In the Dockerfile:
 ## add celery + redis
 - added broker url in settings.base
 - created basic `add` task in home.tasks
+
+## add elasticsearch + test data
+- add Post + Retry models
+- add document module to map above models to elasticsearch
+- add load_posts command to add dummy data to test elastic search with
+- load posts with: `docker-compose run web python manage.py load_posts 20`
+- https://www.obytes.com/blog/building-a-full-text-search-app-using-django-docker-and-elasticsearch
+- https://github.com/obytes/django-elasticsearch-example
+
+
+
 

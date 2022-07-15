@@ -26,6 +26,7 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 INSTALLED_APPS = [
     "home",
     "search",
+    "django_elasticsearch_dsl",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.embeds",
@@ -135,6 +136,10 @@ USE_L10N = True
 USE_TZ = True
 
 
+# DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
@@ -163,12 +168,19 @@ MEDIA_URL = "/media/"
 
 WAGTAIL_SITE_NAME = "app"
 
-# Search
-# https://docs.wagtail.org/en/stable/topics/search/backends.html
-WAGTAILSEARCH_BACKENDS = {
-    "default": {
-        "BACKEND": "wagtail.search.backends.database",
-    }
+# # Search
+# # https://docs.wagtail.org/en/stable/topics/search/backends.html
+# WAGTAILSEARCH_BACKENDS = {
+#     "default": {
+#         "BACKEND": "wagtail.search.backends.database",
+#     }
+# }
+
+# Elasticsearch
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': os.getenv("ELASTICSEARCH_DSL_HOSTS", 'localhost:9200')
+    },
 }
 
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
