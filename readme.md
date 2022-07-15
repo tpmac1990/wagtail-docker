@@ -40,7 +40,7 @@ step into container: docker exec -it <container_id> /bin/bash
 `docker-compose up`
 `docker-compose run --rm app sh -c "python manage.py createsuperuser"`
 go to `http://127.0.0.1:8000/admin/`
-stop continer `ctrl + c`
+stop container `ctrl + c`
 
 
 ## move docker files to root
@@ -63,4 +63,7 @@ In the Dockerfile:
 - base settings: app/app/settings/base.py
 - add wait_for_db command to app doesn't start until database is running
 
+## add celery + redis
+- added broker url in settings.base
+- created basic `add` task in home.tasks
 

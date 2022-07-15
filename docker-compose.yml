@@ -34,26 +34,26 @@ services:
     ports:
       - "5432:5432"
 
-  # redis:
-  #   image: redis:alpine
-  #   container_name: redis
+  redis:
+    image: redis:alpine
+    container_name: redis
 
-  # celery:
-  #   restart: always
-  #   container_name: celery
-  #   build:
-  #     context: .
-  #   command: celery -A app worker -l info
-  #   volumes:
-  #     - ./app:/app
-  #   environment:
-  #     - SECRET_KEY=devsecretkey
-  #     - DEBUG=1
-  #     - DB_HOST=db
-  #     - DB_NAME=devdb
-  #     - DB_USER=devuser
-  #     - DB_PASS=changeme
-  #   depends_on:
-  #     - db
-  #     - redis
-  #     - app
+  celery:
+    restart: always
+    container_name: celery
+    build:
+      context: .
+    command: celery -A app worker -l info
+    volumes:
+      - ./app:/app
+    environment:
+      - SECRET_KEY=devsecretkey
+      - DEBUG=1
+      - DB_HOST=db
+      - DB_NAME=devdb
+      - DB_USER=devuser
+      - DB_PASS=changeme
+    depends_on:
+      - db
+      - redis
+      - app

@@ -21,7 +21,10 @@ COPY ./app /app
 COPY ./scripts /scripts
 
 # Install system packages required by Wagtail and Django.
-RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-recommends \
+RUN python -m venv /py && \
+    /py/bin/pip install --upgrade pip && \
+    apt-get update --yes --quiet && \
+    apt-get install --yes --quiet --no-install-recommends \
     build-essential \
     libpq-dev \
     libmariadbclient-dev \
@@ -31,10 +34,10 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     rm -rf /var/lib/apt/lists/* 
 
 # Install the application server.
-RUN pip install "gunicorn==20.0.4"
+RUN /py/bin/pip install "gunicorn==20.0.4"
 
 # Install the project requirements.
-RUN pip install -r /requirements.txt
+RUN /py/bin/pip install -r /requirements.txt
 
 # Add user that will be used in the container.
 RUN adduser --disabled-password --no-create-home wagtail
