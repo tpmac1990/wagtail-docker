@@ -21,6 +21,7 @@ services:
       - DB_NAME=devdb
       - DB_USER=devuser
       - DB_PASS=changeme
+      - ALLOWED_HOSTS=*
       - ELASTICSEARCH_DSL_HOSTS=es:9200
     depends_on:
       - db

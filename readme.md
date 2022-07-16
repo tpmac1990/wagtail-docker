@@ -50,6 +50,35 @@ or
 go to `http://127.0.0.1:8000/admin/`
 stop container `ctrl + c`
 
+### start app locally for production testing
+`cd Documents/terry/projects/deploy-django-with-docker-compose`
+`docker-compose -f docker-compose-deploy.yml down --volumes`
+`docker-compose -f docker-compose-deploy.yml build`
+`docker-compose -f docker-compose-deploy.yml up` add `-d` to the end to run in the background
+`docker-compose -f docker-compose-deploy.yml run --rm app sh -c "python manage.py createsuperuser"`
+go to `http://127.0.0.1/admin/`
+
+### start app in ec2 instance
+`cd documents/terry/keypairs`
+`ssh -i mac_ec2.pem ec2-user@Public_IPv4_address`
+`git clone https://github.com/tpmac1990/deploy-django-with-docker-compose.git`
+`cd deploy-django-with-docker-compose`
+`nano .env`
+DB_NAME=app   
+DB_USER=approotuser
+DB_PASS=superpassword123
+SECRET_KEY=secretkey12gh
+ALLOWED_HOSTS=Public_IPv4_DNS,hostname2,hostname3
+
+`docker-compose -f docker-compose-deploy.yml up -d`
+`docker-compose -f docker-compose-deploy.yml run --rm app sh -c "python manage.py createsuperuser"`
+
+### updating deployed app
+commit changes to github
+`git pull origin`
+`docker-compose -f docker-compose-deploy.yml build app` app is the name of the service
+`docker-compose -f docker-compose-deploy.yml up --no-deps -d app` replace app with new version but not affect any dependencies
+
 
 ## move docker files to root
 move Docker + .dockerignore + requirements.txt files to the root
@@ -83,3 +112,16 @@ In the Dockerfile:
 - https://www.obytes.com/blog/building-a-full-text-search-app-using-django-docker-and-elasticsearch
 - https://github.com/obytes/django-elasticsearch-example
 
+## add proxy + run app through uWSGI + add docker-compose-deploy.yml for production
+- add a proxy to help manage static files for efficiently in production. Get a better description from 'comments' branch
+    - develoment: static files will be stored in data/web
+- created docker-compose-deploy.yml to run image in production.
+
+
+
+# todo:
+- test images can be saved
+- add react
+- add tests (django)
+- add tests (react)
+- unable to switch between docker-compose and docker-compose-deploy with out resetting the database.

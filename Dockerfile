@@ -1,9 +1,6 @@
 # Use an official Python runtime based on Debian 10 "buster" as a parent image.
 FROM python:3.8.1-slim-buster
 
-# # Add user that will be used in the container.
-# RUN useradd wagtail
-
 # Use /app folder as a directory where the source code is stored.
 WORKDIR /app
 # Port used by this container to serve HTTP.
@@ -16,6 +13,7 @@ EXPOSE 8000
 ENV PYTHONUNBUFFERED=1 \
     PORT=8000
 
+# copy all necessary directories across to image
 COPY ./requirements.txt /requirements.txt
 COPY ./app /app
 COPY ./scripts /scripts
@@ -31,36 +29,21 @@ RUN python -m venv /py && \
     libjpeg62-turbo-dev \
     zlib1g-dev \
     libwebp-dev && \
-    rm -rf /var/lib/apt/lists/* 
+    rm -rf /var/lib/apt/lists/* && \
+    /py/bin/pip install -r /requirements.txt && \
+    # user that will be used in the container
+    adduser --disabled-password --no-create-home wagtail && \
+    mkdir -p /vol/web/static && \
+    mkdir -p /vol/web/media && \
+    # set user as the owner of the directory so it has necessary permissions
+    chown -R wagtail:wagtail /vol && \
+    # provide read & write permissions
+    chmod -R 755 /vol && \
+    # makes all scripts in scripts directory executable.
+    chmod -R +x /scripts
 
-# Install the application server.
-RUN /py/bin/pip install "gunicorn==20.0.4"
-
-# Install the project requirements.
-RUN /py/bin/pip install -r /requirements.txt
-
-# Add user that will be used in the container.
-RUN adduser --disabled-password --no-create-home wagtail
-
-RUN mkdir -p /vol/web/static && \
-    mkdir -p /vol/web/media
-
-# # create /vol directory
-# RUN mkdir -p /vol
-
-# Set this directory to be owned by the "wagtail" user. This Wagtail project
-# uses SQLite, the folder needs to be owned by the user that
-# will be writing to the database file.
-RUN chown -R wagtail:wagtail /vol
-
-# provide read & write permissions
-RUN chmod -R 755 /vol
-
-# makes all scripts in scripts directory executable.
-RUN chmod -R +x /scripts
-
-# Copy the source code of the project into the container.
-# COPY --chown=wagtail:wagtail . .
+# # Install the application server. I am using uWSGI now
+# RUN /py/bin/pip install "gunicorn==20.0.4"
 
 # Use user "wagtail" to run the build commands below and the server itself.
 USER wagtail
