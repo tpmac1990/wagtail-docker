@@ -46,3 +46,9 @@ class Reply(models.Model):
     class Meta:
         app_label = 'home'
         verbose_name_plural = 'Replies'
+
+
+# files uploaded by users as the app is running, handled by reverse proxy
+class Sample(models.Model):
+    title = models.CharField(max_length=100)
+    attachment = models.FileField()
