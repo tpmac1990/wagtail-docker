@@ -117,11 +117,38 @@ In the Dockerfile:
     - develoment: static files will be stored in data/web
 - created docker-compose-deploy.yml to run image in production.
 
+## cleaned up Dockerfile
+- Combined all Run commands. This will reduce image size.
+
+## added Sample model to test user saved media files are stored correctly
+- added model in home app
+- added wagtail_hooks module
+- had to add "wagtail.contrib.modeladmin" to installed apps
+- tested it by adding an image in the admin using both docker-compose
+    and docker-compose-deploy.
+    - docker-compose: saves images in the data/web/ directory
+    - docker-compose-deploy: saves images elsewhere. All paths including `static` are intercepted so the 
+        proxy can serve the static files instead (more efficient). Same for saving static files.
+
+
+## adjusted heap size for elasticsearch
+- added "ES_JAVA_OPTS=-Xms512m -Xmx512m" & "restart: always" to solve elastic search crashing
+
+
+## htmx todo in home app
+- tut: https://www.youtube.com/watch?v=Pr8z9XxyrJc
+
+
 
 
 # todo:
-- test images can be saved
 - add react
 - add tests (django)
 - add tests (react)
-- unable to switch between docker-compose and docker-compose-deploy with out resetting the database.
+- unable to switch between docker-compose and docker-compose-deploy without resetting the database.
+- create react app and copy over
+- make a change to a template
+- create svelte SPA
+- create react SPA
+- create react component
+- add htmx

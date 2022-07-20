@@ -3,6 +3,7 @@ version: '3.9'
 services:
   app:
     container_name: app
+    restart: always
     build:
       context: .
     command: >
@@ -30,6 +31,7 @@ services:
   db:
     image: postgres:13-alpine
     container_name: db
+    restart: always
     environment:
       - POSTGRES_DB=devdb
       - POSTGRES_USER=devuser
@@ -63,8 +65,10 @@ services:
 
   es:
     image: elasticsearch:7.8.1
+    restart: always
     container_name: es
     environment:
       - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
       - "9200:9200"
