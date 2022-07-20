@@ -18,6 +18,8 @@
 
         {# Global stylesheets #}
         <link rel="stylesheet" type="text/css" href="{% static 'css/app.css' %}">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://unpkg.com/htmx.org@1.6.1"></script>
 
         {% block extra_css %}
         {# Override this in templates to add extra stylesheets #}
@@ -35,5 +37,19 @@
         {% block extra_js %}
         {# Override this in templates to add extra javascript #}
         {% endblock %}
+
+        {% comment %} adds csrf token to header when sending requests {% endcomment %}
+        <script>
+            document.body.addEventListener('htmx:configRequest', (event) => {
+                event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}'; 
+            });
+        </script>
+
+        {% comment %} clear the title input after request is complete {% endcomment %}
+        <script>
+            document.body.addEventListener('htmx:afterRequest', (event) => {
+                document.querySelector("input.title").value = '';
+            });
+        </script>
     </body>
 </html>

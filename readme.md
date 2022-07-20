@@ -135,8 +135,9 @@ In the Dockerfile:
 - added "ES_JAVA_OPTS=-Xms512m -Xmx512m" & "restart: always" to solve elastic search crashing
 
 
-## htmx todo in home app
+## htmx & tailwind todo in home app
 - tut: https://www.youtube.com/watch?v=Pr8z9XxyrJc
+- setup of both using CDN's
 
 
 

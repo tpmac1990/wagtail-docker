@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block body_class %}template-homepage{% endblock %}
+{% block body_class %}template-homepage bg-sky-500{% endblock %}
 
 {% block extra_css %}
 
@@ -9,13 +9,60 @@
 Delete the line below if you're just getting started and want to remove the welcome screen!
 {% endcomment %}
 <link rel="stylesheet" href="{% static 'css/welcome_page.css' %}">
+<style>
+    .htmx-swapping {
+        opacity: 0;
+        transition: opacity 1s ease-out;
+    }
+</style>
 {% endblock extra_css %}
 
 {% block content %}
+    <nav class="flex items-center justify-between px-4 py-6 text-center bg-gradient-to-r from-cyan-500 to-sky-500">
+        <a href="/" class="text-2xl text-white">Tailwind</a>
+    </nav>
+
+    <div class="w-4/5 my-6 mx-auto p-2 lg:p-10 bg-white rounded-xl">
+        <form 
+            class="flex mb-6 space-x-4"
+            hx-post="/home/add-todo/"
+            hx-target="#todos"
+            hx-swap="afterend"
+        >
+            <input type="text" name="title" class="title flex-1 px-4 py-3 bg-gray-200 rounded-xl" placeholder="placeholder"/>
+
+            <button class="p-3 rounded-xl text-white bg-cyan-500 hover:bg-cyan-600">+</button>
+        </form>
+
+        <div class="flex py-3 rounded-xl bg-gray-100">
+            <div class="w-4/5">
+                <p class="px-6 text-xs font-medium text-grey-500 uppercase">Title</p>
+            </div>
+
+            <div class="hidden md:block w-1/5 px-6 text-right">
+                <p class="text-xs font-medium text-grey-500 uppercase">Actions</p>
+            </div>
+        </div>
+
+        <div class="divide-y divide-gray-200" id="todos">
+            {% for todo in todos %}
+                {% include 'home/partials/todo.html' %}
+            {% endfor %}
+        </div>
+
+    </div>
 
 {% comment %}
 Delete the line below if you're just getting started and want to remove the welcome screen!
 {% endcomment %}
-{% include 'home/welcome_page.html' %}
+{% comment %} {% include 'home/welcome_page.html' %} {% endcomment %}
 
 {% endblock content %}
+
+{% block extra_js %}
+    {% comment %} <script>
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}'; 
+        });
+    </script> {% endcomment %}
+{% endblock %}
